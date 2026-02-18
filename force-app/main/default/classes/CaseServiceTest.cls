@@ -1,38 +1,35 @@
+@IsTest
 public class CaseServiceTest {
+
     @TestSetup
     static void setupData() {
-        List<Support_Case__c> cases = new List<Support_Case__c>();
-        for (Integer i = 0; i < 5; i++) {
-            cases.add(new Support_Case__c(
-                Name = 'Test Case ' + i,
-                SLA_Hours__c = i
-            ));
-        }
-        insert cases;
+        insert new List<Support_Case__c>{
+            new Support_Case__c(SLA_Hours__c = 2, Status__c = 'New'),
+            new Support_Case__c(SLA_Hours__c = 6, Status__c = 'New'),
+            new Support_Case__c(SLA_Hours__c = 12, Status__c = 'New')
+        };
     }
 
-    @isTest
-    static void testHighPriorityCases(){
-        List<Support_Case__c> cases = [SELECT SLA_Hours__c, Priority__c FROM Support_Case__c WHERE SLA_Hours__c <=4];
-        Test.startTest();
+    @IsTest
+    static void testPriorityAssignment() {
+
+        List<Support_Case__c> cases = [
+            SELECT SLA_Hours__c, Priority__c
+            FROM Support_Case__c
+        ];
+
+        System.Test.startTest();
         update cases;
-        Test.stopTest();
+        System.Test.stopTest();
 
-        for(Support_Case__c sc: cases){
-            System.assertEquals('High', sc.Priority__c);
+        for (Support_Case__c sc : cases) {
+            if (sc.SLA_Hours__c <= 4) {
+                System.assertEquals('High', sc.Priority__c);
+            } else if (sc.SLA_Hours__c <= 8) {
+                System.assertEquals('Medium', sc.Priority__c);
+            } else {
+                System.assertEquals('Low', sc.Priority__c);
+            }
         }
     }
-
-    @isTest
-    static void testMediumPriorityCase() {
-        Support_Case__c caseRecord = new Support_Case__c (
-            Name = 'Medium Case',
-            SLA_Hours__c = 8
-        );
-
-        insert sc;
-
-        sc = [SELECT Priority__c FROM Support_Case__c WHERE Id = :sc.Id];
-    }
-
 }

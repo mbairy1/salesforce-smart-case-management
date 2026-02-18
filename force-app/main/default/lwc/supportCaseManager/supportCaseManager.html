@@ -1,0 +1,42 @@
+<template>
+    <lightning-card title="Support Case Management">
+
+        <div class="slds-p-around_medium">
+            <lightning-input
+                label="Subject"
+                value={subject}
+                onchange={handleSubject}>
+            </lightning-input>
+
+            <lightning-input
+                type="number"
+                label="SLA Hours"
+                value={slaHours}
+                onchange={handleSla}>
+            </lightning-input>
+
+            <lightning-combobox
+                label="Status"
+                value={status}
+                options={statusOptions}
+                onchange={handleStatus}>
+            </lightning-combobox>
+
+            <lightning-button
+                label="Create Case"
+                variant="brand"
+                class="slds-m-top_medium"
+                onclick={createCase}>
+            </lightning-button>
+        </div>
+
+        <template if:true={cases}>
+            <lightning-datatable
+                key-field="Id"
+                data={cases}
+                columns={columns}>
+            </lightning-datatable>
+        </template>
+
+    </lightning-card>
+</template>
