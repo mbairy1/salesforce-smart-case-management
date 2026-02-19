@@ -38,22 +38,64 @@ export default class SupportCaseManager extends LightningElement {
     }
 
     createCase() {
+
+        if (!this.validateInputs()) {
+            return; // ❌ Stop if validation fails
+        }
         createSupportCase({
             subject: this.subject,
             slaHours: this.slaHours,
             status: this.status
         })
-        .then(() => {
-            this.dispatchEvent(
-                new ShowToastEvent({
-                    title: 'Success',
-                    message: 'Support Case created',
-                    variant: 'success'
-                })
-            );
-        })
-        .catch(error => {
-            console.error(error);
-        });
+            .then(() => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Success',
+                        message: 'Support Case created',
+                        variant: 'success'
+                    })
+                );
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
+
+    validateInputs() {
+        let isValid = true;
+
+        const slaInput = this.template.querySelector(
+            'lightning-input[type="number"]'
+        );
+
+        if (!this.slaHours || this.slaHours <= 0) {
+            slaInput.setCustomValidity(
+                'SLA Hours must be greater than 0'
+            );
+            isValid = false;
+        } else {
+            slaInput.setCustomValidity('');
+        }
+
+        slaInput.reportValidity();
+        return isValid;
+    }
+
+    handleError(error) {
+        let message = 'Unknown error';
+
+        if (error?.body?.message) {
+            message = error.body.message;
+        }
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Error',
+                message,
+                variant: 'error'
+            })
+        );
+    }
+
+
 }
